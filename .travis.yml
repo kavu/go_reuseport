@@ -4,5 +4,8 @@ go:
  - release
  - tip
 
+before_install:
+  - sudo uname -a
+
 script:
  - go test -v ./...
