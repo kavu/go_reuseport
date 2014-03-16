@@ -23,7 +23,7 @@ const (
 )
 
 // getSockaddr parses protocol and address and returns implementor syscall.Sockaddr: syscall.SockaddrInet4 or syscall.SockaddrInet6.
-func getSockaddr(proto, addr string) (sa syscall.Sockaddr, so_type int, err error) {
+func getSockaddr(proto, addr string) (sa syscall.Sockaddr, soType int, err error) {
 	var (
 		addr4 [4]byte
 		addr6 [16]byte
