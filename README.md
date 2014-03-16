@@ -1,12 +1,12 @@
 # GO_REUSEPORT
 
 [![Build Status](https://travis-ci.org/kavu/go_reuseport.png?branch=master)](https://travis-ci.org/kavu/go_reuseport)
+[![GoDoc](https://godoc.org/github.com/kavu/go_reuseport?status.png)](https://godoc.org/github.com/kavu/go_reuseport)
 
 **GO_REUSEPORT** is a little expirement to create a `net.Listner` that supports [SO_REUSEPORT](http://lwn.net/Articles/542629/) socket option.
 
 For now Darwin and Linux (from 3.9) are supported. I'll be pleased if you'll test other systems and tell me the results.
-
-You can view documentation on [godoc.org](http://godoc.org/github.com/kavu/go_reuseport "go_reuseport documentation").
+ documentation on [godoc.org](http://godoc.org/github.com/kavu/go_reuseport "go_reuseport documentation").
 
 ## Example ##
 
