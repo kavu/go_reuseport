@@ -5,7 +5,7 @@
 
 **GO_REUSEPORT** is a little expirement to create a `net.Listner` that supports [SO_REUSEPORT](http://lwn.net/Articles/542629/) socket option.
 
-For now Darwin and Linux (from 3.9) are supported. I'll be pleased if you'll test other systems and tell me the results.
+For now, Darwin and Linux (from 3.9) systems are supported. I'll be pleased if you'll test other systems and tell me the results.
  documentation on [godoc.org](http://godoc.org/github.com/kavu/go_reuseport "go_reuseport documentation").
 
 ## Example ##
@@ -19,12 +19,13 @@ import (
   "net/http"
   "os"
   "runtime"
+  "github.com/kavu/go_reuseport"
 )
 
 func main() {
   runtime.GOMAXPROCS(runtime.NumCPU())
 
-  listner, err := NewReusablePortListner("tcp4", "localhost:8881")
+  listner, err := reuseport.NewReusablePortListner("tcp4", "localhost:8881")
   if err != nil {
     panic(err)
   }

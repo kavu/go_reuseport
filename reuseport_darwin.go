@@ -1,5 +1,5 @@
-package go_reuseport
+package reuseport
 
 import "syscall"
 
-var reuse_port = syscall.SO_REUSEPORT
+var reusePort = syscall.SO_REUSEPORT

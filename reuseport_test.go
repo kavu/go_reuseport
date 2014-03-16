@@ -1,4 +1,4 @@
-package go_reuseport
+package reuseport
 
 import (
 	"fmt"
@@ -10,13 +10,13 @@ import (
 )
 
 const (
-	server_one_responce   = "1"
-	server_two_responce   = "2"
-	server_three_responce = "3"
+	serverOneResponse   = "1"
+	serverTwoResponse   = "2"
+	serverThreeResponse = "3"
 )
 
 var (
-	server_one, server_two, server_three *httptest.Server
+	serverOne, serverTwo, serverThree *httptest.Server
 )
 
 func NewServer(resp string) *httptest.Server {
@@ -26,39 +26,39 @@ func NewServer(resp string) *httptest.Server {
 }
 
 func init() {
-	server_one = NewServer(server_one_responce)
-	server_two = NewServer(server_two_responce)
-	server_three = NewServer(server_three_responce)
+	serverOne = NewServer(serverOneResponse)
+	serverTwo = NewServer(serverTwoResponse)
+	serverThree = NewServer(serverThreeResponse)
 }
 
 func TestNewReusablePortListner(t *testing.T) {
-	listner_one, err := NewReusablePortListner("tcp4", "localhost:10081")
+	listnerOne, err := NewReusablePortListner("tcp4", "localhost:10081")
 	if err != nil {
 		panic(err)
 	}
-	defer listner_one.Close()
+	defer listnerOne.Close()
 
-	listner_two, err := NewReusablePortListner("tcp4", "127.0.0.1:10081")
+	listnerTwo, err := NewReusablePortListner("tcp4", "127.0.0.1:10081")
 	if err != nil {
 		panic(err)
 	}
-	defer listner_two.Close()
+	defer listnerTwo.Close()
 
-	listner_three, err := NewReusablePortListner("tcp6", "[::1]:10081")
+	listnerThree, err := NewReusablePortListner("tcp6", "[::1]:10081")
 	if err != nil {
 		panic(err)
 	}
-	defer listner_three.Close()
+	defer listnerThree.Close()
 
-	server_one.Listener = listner_one
-	server_two.Listener = listner_two
-	server_three.Listener = listner_three
+	serverOne.Listener = listnerOne
+	serverTwo.Listener = listnerTwo
+	serverThree.Listener = listnerThree
 
-	server_one.Start()
-	server_two.Start()
+	serverOne.Start()
+	serverTwo.Start()
 
 	// Server One — First Response
-	resp1, err := http.Get(server_one.URL)
+	resp1, err := http.Get(serverOne.URL)
 	if err != nil {
 		panic(err)
 	}
@@ -67,12 +67,12 @@ func TestNewReusablePortListner(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	if string(body1) != server_one_responce && string(body1) != server_two_responce {
-		t.Errorf("Expected %#v or %#v, got %#v.", server_one_responce, server_two_responce, string(body1))
+	if string(body1) != serverOneResponse && string(body1) != serverTwoResponse {
+		t.Errorf("Expected %#v or %#v, got %#v.", serverOneResponse, serverTwoResponse, string(body1))
 	}
 
 	// Server Two — First Response
-	resp2, err := http.Get(server_two.URL)
+	resp2, err := http.Get(serverTwo.URL)
 	if err != nil {
 		panic(err)
 	}
@@ -81,14 +81,14 @@ func TestNewReusablePortListner(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	if string(body2) != server_one_responce && string(body2) != server_two_responce {
-		t.Errorf("Expected %#v or %#v, got %#v.", server_one_responce, server_two_responce, string(body2))
+	if string(body2) != serverOneResponse && string(body2) != serverTwoResponse {
+		t.Errorf("Expected %#v or %#v, got %#v.", serverOneResponse, serverTwoResponse, string(body2))
 	}
 
-	server_two.Close()
+	serverTwo.Close()
 
 	// Server One — Second Response
-	resp3, err := http.Get(server_one.URL)
+	resp3, err := http.Get(serverOne.URL)
 	if err != nil {
 		panic(err)
 	}
@@ -97,14 +97,14 @@ func TestNewReusablePortListner(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	if string(body3) != server_one_responce {
-		t.Errorf("Expected %#v, got %#v.", server_one_responce, string(body3))
+	if string(body3) != serverOneResponse {
+		t.Errorf("Expected %#v, got %#v.", serverOneResponse, string(body3))
 	}
 
-	server_three.Start()
+	serverThree.Start()
 
 	// Server Three — First Response
-	resp4, err := http.Get(server_three.URL)
+	resp4, err := http.Get(serverThree.URL)
 	if err != nil {
 		panic(err)
 	}
@@ -113,14 +113,14 @@ func TestNewReusablePortListner(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	if string(body4) != server_three_responce {
-		t.Errorf("Expected %#v, got %#v.", server_three_responce, string(body4))
+	if string(body4) != serverThreeResponse {
+		t.Errorf("Expected %#v, got %#v.", serverThreeResponse, string(body4))
 	}
 
-	server_three.Close()
+	serverThree.Close()
 
 	// Server One — Third Response
-	resp5, err := http.Get(server_one.URL)
+	resp5, err := http.Get(serverOne.URL)
 	if err != nil {
 		panic(err)
 	}
@@ -129,11 +129,11 @@ func TestNewReusablePortListner(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	if string(body5) != server_one_responce {
-		t.Errorf("Expected %#v, got %#v.", server_one_responce, string(body5))
+	if string(body5) != serverOneResponse {
+		t.Errorf("Expected %#v, got %#v.", serverOneResponse, string(body5))
 	}
 
-	server_one.Close()
+	serverOne.Close()
 }
 
 func BenchmarkNewReusablePortListner(b *testing.B) {

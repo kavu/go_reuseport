@@ -4,8 +4,8 @@
 // The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-// go_reuseport provides a function that returns a net.Listener powered by a net.FileListner with a SO_REUSEPORT option set to the socket.
-package go_reuseport
+// Package reuseport provides a function that returns a net.Listener powered by a net.FileListner with a SO_REUSEPORT option set to the socket.
+package reuseport
 
 import (
 	"errors"
@@ -54,20 +54,20 @@ func getSockaddr(proto, addr string) (sa syscall.Sockaddr, so_type int, err erro
 // NewReusablePortListner returns net.FileListener that created from a file discriptor for a socket with SO_REUSEPORT option.
 func NewReusablePortListner(proto, addr string) (l net.Listener, err error) {
 	var (
-		so_type, fd int
-		file        *os.File
-		sockaddr    syscall.Sockaddr
+		soType, fd int
+		file       *os.File
+		sockaddr   syscall.Sockaddr
 	)
 
-	if sockaddr, so_type, err = getSockaddr(proto, addr); err != nil {
+	if sockaddr, soType, err = getSockaddr(proto, addr); err != nil {
 		return nil, err
 	}
 
-	if fd, err = syscall.Socket(so_type, syscall.SOCK_STREAM, syscall.IPPROTO_TCP); err != nil {
+	if fd, err = syscall.Socket(soType, syscall.SOCK_STREAM, syscall.IPPROTO_TCP); err != nil {
 		return nil, err
 	}
 
-	if err = syscall.SetsockoptInt(fd, syscall.SOL_SOCKET, reuse_port, 1); err != nil {
+	if err = syscall.SetsockoptInt(fd, syscall.SOL_SOCKET, reusePort, 1); err != nil {
 		return nil, err
 	}
 

@@ -1,3 +1,3 @@
-package go_reuseport
+package reuseport
 
-var reuse_port = 0x0F
+var reusePort = 0x0F
