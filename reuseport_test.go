@@ -31,28 +31,28 @@ func init() {
 	serverThree = NewServer(serverThreeResponse)
 }
 
-func TestNewReusablePortListner(t *testing.T) {
-	listnerOne, err := NewReusablePortListner("tcp4", "localhost:10081")
+func TestNewReusablePortListener(t *testing.T) {
+	listenerOne, err := NewReusablePortListener("tcp4", "localhost:10081")
 	if err != nil {
 		panic(err)
 	}
-	defer listnerOne.Close()
+	defer listenerOne.Close()
 
-	listnerTwo, err := NewReusablePortListner("tcp4", "127.0.0.1:10081")
+	listenerTwo, err := NewReusablePortListener("tcp4", "127.0.0.1:10081")
 	if err != nil {
 		panic(err)
 	}
-	defer listnerTwo.Close()
+	defer listenerTwo.Close()
 
-	listnerThree, err := NewReusablePortListner("tcp6", "[::1]:10081")
+	listenerThree, err := NewReusablePortListener("tcp6", "[::1]:10081")
 	if err != nil {
 		panic(err)
 	}
-	defer listnerThree.Close()
+	defer listenerThree.Close()
 
-	serverOne.Listener = listnerOne
-	serverTwo.Listener = listnerTwo
-	serverThree.Listener = listnerThree
+	serverOne.Listener = listenerOne
+	serverTwo.Listener = listenerTwo
+	serverThree.Listener = listenerThree
 
 	serverOne.Start()
 	serverTwo.Start()
@@ -136,28 +136,28 @@ func TestNewReusablePortListner(t *testing.T) {
 	serverOne.Close()
 }
 
-func BenchmarkNewReusablePortListner(b *testing.B) {
+func BenchmarkNewReusablePortListener(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		listner, err := NewReusablePortListner("tcp4", "localhost:10081")
+		listener, err := NewReusablePortListener("tcp4", "localhost:10081")
 		if err != nil {
 			b.Error(err)
 		}
-		listner.Close()
+		listener.Close()
 	}
 }
 
-func ExampleNewReusablePortListner(b *testing.B) {
-	listner, err := NewReusablePortListner("tcp4", ":8881")
+func ExampleNewReusablePortListener(b *testing.B) {
+	listener, err := NewReusablePortListener("tcp4", ":8881")
 	if err != nil {
 		panic(err)
 	}
-	defer listner.Close()
+	defer listener.Close()
 
 	server := &http.Server{}
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Hello, %q\n", html.EscapeString(r.URL.Path))
-		listner.Close()
+		listener.Close()
 	})
 
-	panic(server.Serve(listner))
+	panic(server.Serve(listener))
 }
