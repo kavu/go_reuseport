@@ -41,7 +41,7 @@ func main() {
 }
 ```
 
-Now you can run several instances of this tint server withot `Address already in use` errors.
+Now you can run several instances of this tint server without `Address already in use` errors.
 
 ## Thanks
 
