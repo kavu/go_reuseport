@@ -16,38 +16,77 @@ import (
 )
 
 const (
-	tcp4                  = 52 // "4"
-	tcp6                  = 54 // "6"
+	v4                  = 52 // "4"
+	v6                  = 54 // "6"
 	unsupportedProtoError = "Only tcp4 and tcp6 are supported"
 	filePrefix            = "port."
 )
 
 // getSockaddr parses protocol and address and returns implementor syscall.Sockaddr: syscall.SockaddrInet4 or syscall.SockaddrInet6.
-func getSockaddr(proto, addr string) (sa syscall.Sockaddr, soType int, err error) {
+func getSockaddr(proto, addr string) (sa syscall.Sockaddr, soType int,proto int, err error) {
 	var (
 		addr4 [4]byte
 		addr6 [16]byte
 		ip    *net.TCPAddr
+		udpIp	*net.UDPAddr
+		mode int // 0=not match,1 = tcp,2=udp
 	)
-
-	ip, err = net.ResolveTCPAddr(proto, addr)
-	if err != nil {
-		return nil, -1, err
+	switch proto {
+		case "tcp4":
+			mode = 1
+		case "tcp6":
+			mode = 1
+		case "tcp":
+			mode = 1
+		case "udp4":
+			mode = 2
+		case "udp6":
+			mode = 2
+		case "udp":
+			mode = 2
+		default:
+			mode = 0
+		
 	}
-
-	switch proto[len(proto)-1] {
-	default:
-		return nil, -1, errors.New(unsupportedProtoError)
-	case tcp4:
-		if ip.IP != nil {
-			copy(addr4[:], ip.IP[12:16]) // copy last 4 bytes of slice to array
-		}
-		return &syscall.SockaddrInet4{Port: ip.Port, Addr: addr4}, syscall.AF_INET, nil
-	case tcp6:
-		if ip.IP != nil {
-			copy(addr6[:], ip.IP) // copy all bytes of slice to array
-		}
-		return &syscall.SockaddrInet6{Port: ip.Port, Addr: addr6}, syscall.AF_INET6, nil
+	switch mode {
+		case 1://TCP
+			ip, err = net.ResolveTCPAddr(proto, addr)
+			if err != nil {
+				return nil, -1, mode, err
+			}
+		
+			switch proto[len(proto)-1] {
+			case v4:
+				if ip.IP != nil {
+					copy(addr4[:], ip.IP[12:16]) // copy last 4 bytes of slice to array
+				}
+				return &syscall.SockaddrInet4{Port: ip.Port, Addr: addr4}, syscall.AF_INET, mode, nil
+			case v6:
+				if ip.IP != nil {
+					copy(addr6[:], ip.IP) // copy all bytes of slice to array
+				}
+				return &syscall.SockaddrInet6{Port: ip.Port, Addr: addr6}, syscall.AF_INET6, mode, nil
+			}	
+		case 2://UDP
+			udpIp, err = net.ResolveUDPAddr(proto, addr)
+			if err != nil {
+				return nil, -1, err
+			}
+		
+			switch proto[len(proto)-1] {
+			case v4:
+				if udpIp.IP != nil {
+					copy(addr4[:], ip.IP[12:16]) // copy last 4 bytes of slice to array
+				}
+				return &syscall.SockaddrInet4{Port: ip.Port, Addr: addr4}, syscall.AF_INET, mode, nil
+			case v6:
+				if udpIp.IP != nil {
+					copy(addr6[:], ip.IP) // copy all bytes of slice to array
+				}
+				return &syscall.SockaddrInet6{Port: ip.Port, Addr: addr6}, syscall.AF_INET6, mode, nil
+			}
+		default:
+			return nil, -1, mode, errors.New(unsupportedProtoError)
 	}
 }
 
@@ -59,11 +98,16 @@ func NewReusablePortListener(proto, addr string) (l net.Listener, err error) {
 		sockaddr   syscall.Sockaddr
 	)
 
-	if sockaddr, soType, err = getSockaddr(proto, addr); err != nil {
+	if sockaddr, soType, mode, err = getSockaddr(proto, addr); err != nil {
 		return nil, err
 	}
-
-	if fd, err = syscall.Socket(soType, syscall.SOCK_STREAM, syscall.IPPROTO_TCP); err != nil {
+	var IPProto int
+	if mode = 1 {
+		IPProto = syscall.IPPROTO_TCP
+	} else {
+		IPProto = syscall.IPPROTO_UDP
+	}
+	if fd, err = syscall.Socket(soType, syscall.SOCK_STREAM, IPProto); err != nil {
 		return nil, err
 	}
 
