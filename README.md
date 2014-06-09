@@ -9,7 +9,7 @@ For now, Darwin and Linux (from 3.9) systems are supported. I'll be pleased if y
  documentation on [godoc.org](http://godoc.org/github.com/kavu/go_reuseport "go_reuseport documentation").
 
 ## Example ##
-
+TCP Listener
 ```go
 package main
 
@@ -41,6 +41,41 @@ func main() {
 }
 ```
 
+UDP conn
+```go
+package main
+
+import (
+  "fmt"
+  "html"
+  "net"
+  "os"
+  "runtime"
+  "github.com/matishsiao/go_reuseport"
+)
+
+func main() {
+  runtime.GOMAXPROCS(runtime.NumCPU())
+
+  sock, err := reuseport.NewReusableUDPPortConn("udp4", ":7900")
+	 if err != nil {
+		 fmt.Printf("ListenUDP Error:%v \n", err)
+		 os.Exit(1)
+	 }
+	 receiver(sock)
+}
+
+
+func receiver(c net.PacketConn) {
+	buf := make([]byte, 2048)
+	for {
+			n, addr, err := c.ReadFrom(buf)
+		if err != nil {			
+			return
+		}
+	}
+}
+```
 Now you can run several instances of this tint server without `Address already in use` errors.
 
 ## Thanks
