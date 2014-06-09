@@ -16,8 +16,6 @@ import (
 )
 
 const (
-	v4                  = 52 // "4"
-	v6                  = 54 // "6"
 	unsupportedProtoError = "Only tcp4 ,tcp6,udp4,udp6 are supported.If use udp or tcp will auto conver to upd4 and tcp4."
 	filePrefix            = "port."
 )
@@ -30,24 +28,30 @@ func getSockaddr(proto, addr string) (sa syscall.Sockaddr, soType int,mode int, 
 		ip    *net.TCPAddr
 		udpIp	*net.UDPAddr
 		proto_mode int // 0=not match,1 = tcp,2=udp
+		socketType int // 1 = v4,2=v6
 	)
 	switch string(proto) {
 		case "tcp4":
 			proto_mode = 1
+			socketType = 1
 		case "tcp6":
 			proto_mode = 1
+			socketType = 2
 		case "tcp":
 			proto_mode = 1
-			proto = "tcp4"
+			socketType = 1
 		case "udp4":
 			proto_mode = 2
+			socketType = 1
 		case "udp6":
 			proto_mode = 2
+			socketType = 2
 		case "udp":
-			proto = "udp4"
 			proto_mode = 2
+			socketType = 1
 		default:
 			proto_mode = 0
+			socketType = 0
 		
 	}
 	
@@ -58,13 +62,13 @@ func getSockaddr(proto, addr string) (sa syscall.Sockaddr, soType int,mode int, 
 				return nil, -1, proto_mode, err
 			}
 		
-			switch proto[len(proto)-1] {
-			case v4:
+			switch socketType {
+			case 1://v4
 				if ip.IP != nil {
 					copy(addr4[:], ip.IP[12:16]) // copy last 4 bytes of slice to array
 				}
 				return &syscall.SockaddrInet4{Port: ip.Port, Addr: addr4}, syscall.AF_INET, proto_mode, nil
-			case v6:
+			case 2://v6
 				if ip.IP != nil {
 					copy(addr6[:], ip.IP) // copy all bytes of slice to array
 				}
@@ -77,13 +81,13 @@ func getSockaddr(proto, addr string) (sa syscall.Sockaddr, soType int,mode int, 
 				return nil, -1, proto_mode, err
 			}
 					
-			switch proto[len(proto)-1] {
-				case v4:
+			switch socketType {
+				case 1://v4
 					if udpIp.IP != nil {
 						copy(addr4[:], udpIp.IP[12:16]) // copy last 4 bytes of slice to array
 					}
 					return &syscall.SockaddrInet4{Port: udpIp.Port, Addr: addr4}, syscall.AF_INET, proto_mode, nil
-				case v6:
+				case 2://v6
 					if udpIp.IP != nil {
 						copy(addr6[:], udpIp.IP) // copy all bytes of slice to array
 					}

@@ -5,6 +5,7 @@ import (
 	"html"
 	"io/ioutil"
 	"net/http"
+	"net"
 	"net/http/httptest"
 	"testing"
 )
@@ -17,6 +18,7 @@ const (
 
 var (
 	serverOne, serverTwo, serverThree *httptest.Server
+	udpServerOne,udpServerTwo,udpServerThree net.PacketConn
 )
 
 func NewServer(resp string) *httptest.Server {
@@ -25,10 +27,71 @@ func NewServer(resp string) *httptest.Server {
 	}))
 }
 
+func NewUdpServer(proto,addr string) net.PacketConn {
+	sock, err := NewReusableUDPPortConn(proto, addr)
+	if err != nil {
+		panic(err)
+	}
+	return sock
+}
+
+
 func init() {
 	serverOne = NewServer(serverOneResponse)
 	serverTwo = NewServer(serverTwoResponse)
 	serverThree = NewServer(serverThreeResponse)
+}
+
+func TestNewReusableUDPPortConn(t *testing.T) {
+	//udp default 
+	udpServerOne = NewUdpServer("udp","127.0.0.1:7900")	
+	go receiver(udpServerOne)
+	//udp4
+	udpServerTwo = NewUdpServer("udp4","127.0.0.1:7900")	
+	go receiver(udpServerTwo)
+	//udp6
+	udpServerThree = NewUdpServer("udp6","[::1]:7900")	
+	go receiver(udpServerThree)
+	
+	go udpTestClient("udp", "127.0.0.1:7900")
+	go udpTestClient("udp4", "127.0.0.1:7900")
+	go udpTestClient("udp6", "[::1]:7900")
+	
+	
+}
+
+func udpTestClient(proto , addr string) {	
+	serverAddr, err := net.ResolveUDPAddr(proto, addr)
+	conn, err := net.DialUDP(proto, nil, serverAddr)
+	if err != nil {
+		panic(err)
+	}
+	conn.Write([]byte("hello"))
+	
+	buf := make([]byte,512)
+	
+	for {
+        _,err := conn.Read(buf[0:])
+        if err != nil {
+			panic(err)
+		}
+		break
+    }
+    defer conn.Close()
+}
+
+func receiver(c net.PacketConn) {
+	buf := make([]byte, 2048)
+	for {
+		_, addr, err := c.ReadFrom(buf)
+		if err != nil {			
+			panic(err)
+		}
+		resp := fmt.Sprintf("udpServer addr:%s",c.LocalAddr().String())
+		c.WriteTo([]byte(resp),addr)
+		break
+	}
+	c.Close()
 }
 
 func TestNewReusablePortListener(t *testing.T) {
@@ -143,6 +206,16 @@ func BenchmarkNewReusablePortListener(b *testing.B) {
 			b.Error(err)
 		}
 		listener.Close()
+	}
+}
+
+func BenchmarkNewReusableUDPPortConn(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		conn, err := NewReusableUDPPortConn("udp4", "localhost:7900")
+		if err != nil {
+			b.Error(err)
+		}
+		conn.Close()
 	}
 }
 
