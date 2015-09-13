@@ -16,19 +16,15 @@ const (
 )
 
 var (
-	serverOne, serverTwo, serverThree *httptest.Server
+	serverOne   = NewServer(serverOneResponse)
+	serverTwo   = NewServer(serverTwoResponse)
+	serverThree = NewServer(serverThreeResponse)
 )
 
 func NewServer(resp string) *httptest.Server {
 	return httptest.NewUnstartedServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, resp)
 	}))
-}
-
-func init() {
-	serverOne = NewServer(serverOneResponse)
-	serverTwo = NewServer(serverTwoResponse)
-	serverThree = NewServer(serverThreeResponse)
 }
 
 func TestNewReusablePortListener(t *testing.T) {
