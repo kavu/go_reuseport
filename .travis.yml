@@ -14,7 +14,7 @@ os:
   - osx
 
 before_install:
-  - sudo uname -a
+  - uname -a
 
 script:
   - go test -v ./...
