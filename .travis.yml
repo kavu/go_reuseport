@@ -21,5 +21,7 @@ script:
   - go test -v ./...
   - go test -v -benchmem -benchtime=5s -bench=.
 
-allow_failures:
-  - go: 1.5
+matrix:
+  allow_failures:
+    - go: 1.5
+    - go: tip
