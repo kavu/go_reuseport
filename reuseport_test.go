@@ -40,15 +40,15 @@ func TestNewReusablePortListener(t *testing.T) {
 	}
 	defer listenerTwo.Close()
 
-	listenerThree, err := NewReusablePortListener("tcp6", "[::1]:10081")
-	if err != nil {
-		panic(err)
-	}
-	defer listenerThree.Close()
+	// listenerThree, err := NewReusablePortListener("tcp6", "[::1]:10081")
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// defer listenerThree.Close()
 
 	serverOne.Listener = listenerOne
 	serverTwo.Listener = listenerTwo
-	serverThree.Listener = listenerThree
+	// serverThree.Listener = listenerThree
 
 	serverOne.Start()
 	serverTwo.Start()
