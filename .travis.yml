@@ -1,4 +1,5 @@
-sudo: required
+sudo: false
+group: edge
 
 language: go
 
@@ -18,3 +19,7 @@ before_install:
 
 script:
   - go test -v ./...
+  - go test -v -benchmem -benchtime=5s -bench=.
+
+allow_failures:
+  - go: 1.5
