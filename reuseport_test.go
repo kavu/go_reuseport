@@ -34,7 +34,7 @@ func TestNewReusablePortListener(t *testing.T) {
 	}
 	defer listenerOne.Close()
 
-	listenerTwo, err := NewReusablePortListener("tcp4", "127.0.0.1:10081")
+	listenerTwo, err := NewReusablePortListener("tcp", "127.0.0.1:10081")
 	if err != nil {
 		panic(err)
 	}
