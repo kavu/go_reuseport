@@ -9,19 +9,19 @@ package reuseport
 import "testing"
 
 func TestNewReusablePortUDPListener(t *testing.T) {
-	listenerOne, err := NewReusablePortUDPListener("udp4", "localhost:10081")
+	listenerOne, err := NewReusablePortPacketConn("udp4", "localhost:10081")
 	if err != nil {
 		t.Error(err)
 	}
 	defer listenerOne.Close()
 
-	listenerTwo, err := NewReusablePortUDPListener("udp", "127.0.0.1:10081")
+	listenerTwo, err := NewReusablePortPacketConn("udp", "127.0.0.1:10081")
 	if err != nil {
 		t.Error(err)
 	}
 	defer listenerTwo.Close()
 
-	listenerThree, err := NewReusablePortUDPListener("udp6", "[::1]:10081")
+	listenerThree, err := NewReusablePortPacketConn("udp6", "[::1]:10081")
 	if err != nil {
 		t.Error(err)
 	}
@@ -30,7 +30,7 @@ func TestNewReusablePortUDPListener(t *testing.T) {
 
 func BenchmarkNewReusableUDPPortListener(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		listener, err := NewReusablePortUDPListener("udp4", "localhost:10082")
+		listener, err := NewReusablePortPacketConn("udp4", "localhost:10082")
 
 		if err != nil {
 			b.Error(err)

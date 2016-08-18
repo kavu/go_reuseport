@@ -64,7 +64,7 @@ func determineUDPProto(proto string, ip *net.UDPAddr) (string, error) {
 }
 
 // NewReusablePortListener returns net.FileListener that created from a file discriptor for a socket with SO_REUSEPORT option.
-func NewReusablePortUDPListener(proto, addr string) (l net.PacketConn, err error) {
+func NewReusablePortPacketConn(proto, addr string) (l net.PacketConn, err error) {
 	var (
 		soType, fd int
 		file       *os.File
