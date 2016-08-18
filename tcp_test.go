@@ -33,8 +33,27 @@ func NewHTTPServer(resp string) *httptest.Server {
 		fmt.Fprint(w, resp)
 	}))
 }
-
 func TestNewReusablePortListener(t *testing.T) {
+	listenerOne, err := NewReusablePortListener("tcp4", "localhost:10081")
+	if err != nil {
+		t.Error(err)
+	}
+	defer listenerOne.Close()
+
+	listenerTwo, err := NewReusablePortListener("tcp", "127.0.0.1:10081")
+	if err != nil {
+		t.Error(err)
+	}
+	defer listenerTwo.Close()
+
+	listenerThree, err := NewReusablePortListener("tcp6", "[::1]:10081")
+	if err != nil {
+		t.Error(err)
+	}
+	defer listenerThree.Close()
+}
+
+func TestNewReusablePortServers(t *testing.T) {
 	listenerOne, err := NewReusablePortListener("tcp4", "localhost:10081")
 	if err != nil {
 		t.Error(err)
