@@ -16,8 +16,10 @@ before_install:
   - uname -a
 
 script:
-  - go test -v ./...
-  - go test -v -benchmem -benchtime=5s -bench=.
+  - go test -v -cover ./...
+  - go test -v -cover -benchmem -benchtime=5s -bench=.
+  - go test -v -cover -race  ./...
+  - go test -v -cover -race -benchmem -benchtime=5s -bench=.
 
 matrix:
   allow_failures:
