@@ -20,6 +20,12 @@ func TestNewReusablePortUDPListener(t *testing.T) {
 		t.Error(err)
 	}
 	defer listenerTwo.Close()
+
+	listenerThree, err := NewReusablePortUDPListener("udp6", "[::1]:10081")
+	if err != nil {
+		t.Error(err)
+	}
+	defer listenerThree.Close()
 }
 
 func BenchmarkNewReusableUDPPortListener(b *testing.B) {
