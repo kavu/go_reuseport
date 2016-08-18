@@ -23,9 +23,7 @@ import (
 )
 
 func main() {
-  runtime.GOMAXPROCS(runtime.NumCPU())
-
-  listener, err := reuseport.NewReusablePortListener("tcp4", "localhost:8881")
+  listener, err := reuseport.NewReusablePortListener("tcp", "localhost:8881")
   if err != nil {
     panic(err)
   }
