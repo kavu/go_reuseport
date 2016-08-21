@@ -13,7 +13,7 @@ import (
 	"syscall"
 )
 
-var unsupportedUDPProtoError = errors.New("Only udp, udp4, udp6 are supported")
+var errUnsupportedUDPProtocol = errors.New("only udp, udp4, udp6 are supported")
 
 func getUDPSockaddr(proto, addr string) (sa syscall.Sockaddr, soType int, err error) {
 	var (
@@ -44,7 +44,7 @@ func getUDPSockaddr(proto, addr string) (sa syscall.Sockaddr, soType int, err er
 		return &syscall.SockaddrInet6{Port: udp.Port, Addr: addr6}, syscall.AF_INET6, nil
 	}
 
-	return nil, -1, unsupportedProtoError
+	return nil, -1, errUnsupportedProtocol
 }
 
 func determineUDPProto(proto string, ip *net.UDPAddr) (string, error) {
@@ -60,10 +60,10 @@ func determineUDPProto(proto string, ip *net.UDPAddr) (string, error) {
 		return "udp6", nil
 	}
 
-	return "", unsupportedUDPProtoError
+	return "", errUnsupportedUDPProtocol
 }
 
-// NewReusablePortListener returns net.FileListener that created from a file discriptor for a socket with SO_REUSEPORT option.
+// NewReusablePortPacketConn returns net.FileListener that created from a file discriptor for a socket with SO_REUSEPORT option.
 func NewReusablePortPacketConn(proto, addr string) (l net.PacketConn, err error) {
 	var (
 		soType, fd int

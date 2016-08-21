@@ -14,8 +14,8 @@ import (
 )
 
 var (
-	listenerBacklog          = maxListenerBacklog()
-	unsupportedTCPProtoError = errors.New("Only tcp, tcp4, tcp6 are supported")
+	listenerBacklogMaxSize    = maxListenerBacklog()
+	errUnsupportedTCPProtocol = errors.New("only tcp, tcp4, tcp6 are supported")
 )
 
 func getTCPSockaddr(proto, addr string) (sa syscall.Sockaddr, soType int, err error) {
@@ -47,7 +47,7 @@ func getTCPSockaddr(proto, addr string) (sa syscall.Sockaddr, soType int, err er
 		return &syscall.SockaddrInet6{Port: tcp.Port, Addr: addr6}, syscall.AF_INET6, nil
 	}
 
-	return nil, -1, unsupportedProtoError
+	return nil, -1, errUnsupportedProtocol
 }
 
 func determineTCPProto(proto string, ip *net.TCPAddr) (string, error) {
@@ -63,7 +63,7 @@ func determineTCPProto(proto string, ip *net.TCPAddr) (string, error) {
 		return "tcp6", nil
 	}
 
-	return "", unsupportedTCPProtoError
+	return "", errUnsupportedTCPProtocol
 }
 
 // NewReusablePortListener returns net.FileListener that created from a file discriptor for a socket with SO_REUSEPORT option.
@@ -100,7 +100,7 @@ func NewReusablePortListener(proto, addr string) (l net.Listener, err error) {
 	}
 
 	// Set backlog size to the maximum
-	if err = syscall.Listen(fd, listenerBacklog); err != nil {
+	if err = syscall.Listen(fd, listenerBacklogMaxSize); err != nil {
 		syscall.Close(fd)
 		return nil, err
 	}
