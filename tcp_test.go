@@ -158,7 +158,7 @@ func TestNewReusablePortServers(t *testing.T) {
 	httpServerOne.Close()
 }
 
-func BenchmarkNewReusableTCPPortListener(b *testing.B) {
+func BenchmarkNewReusablePortListener(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		listener, err := NewReusablePortListener("tcp4", "localhost:10081")
 
@@ -170,7 +170,7 @@ func BenchmarkNewReusableTCPPortListener(b *testing.B) {
 	}
 }
 
-func ExampleTCPListener() {
+func ExampleNewReusablePortListener() {
 	listener, err := NewReusablePortListener("tcp", ":8881")
 	if err != nil {
 		panic(err)

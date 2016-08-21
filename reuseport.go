@@ -18,7 +18,7 @@ import (
 
 const fileNameTemplate = "reuseport.%d.%s.%s"
 
-var unsupportedProtoError = errors.New("Only tcp, tcp4, tcp6, udp, udp4, udp6 are supported")
+var errUnsupportedProtocol = errors.New("only tcp, tcp4, tcp6, udp, udp4, udp6 are supported")
 
 // getSockaddr parses protocol and address and returns implementor syscall.Sockaddr: syscall.SockaddrInet4 or syscall.SockaddrInet6.
 func getSockaddr(proto, addr string) (sa syscall.Sockaddr, soType int, err error) {
@@ -28,7 +28,7 @@ func getSockaddr(proto, addr string) (sa syscall.Sockaddr, soType int, err error
 	case "udp", "udp4", "udp6":
 		return getUDPSockaddr(proto, addr)
 	default:
-		return nil, -1, unsupportedProtoError
+		return nil, -1, errUnsupportedProtocol
 	}
 }
 

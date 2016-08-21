@@ -14,6 +14,7 @@ func maxListenerBacklog() int {
 		n   uint32
 		err error
 	)
+
 	switch runtime.GOOS {
 	case "darwin", "freebsd":
 		n, err = syscall.SysctlUint32("kern.ipc.somaxconn")
@@ -22,9 +23,11 @@ func maxListenerBacklog() int {
 	case "openbsd":
 		n, err = syscall.SysctlUint32("kern.somaxconn")
 	}
+
 	if n == 0 || err != nil {
 		return syscall.SOMAXCONN
 	}
+
 	// FreeBSD stores the backlog in a uint16, as does Linux.
 	// Assume the other BSDs do too. Truncate number to avoid wrapping.
 	// See issue 5030.
