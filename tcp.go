@@ -49,6 +49,15 @@ func getTCPSockaddr(proto, addr string) (sa syscall.Sockaddr, soType int, err er
 			copy(sa.Addr[:], tcp.IP) // copy all bytes of slice to array
 		}
 
+		if tcp.Zone != "" {
+			iface, err := net.InterfaceByName(tcp.Zone)
+			if err != nil {
+				return nil, -1, err
+			}
+
+			sa.ZoneId = uint32(iface.Index)
+		}
+
 		return sa, syscall.AF_INET6, nil
 	}
 
