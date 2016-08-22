@@ -5,4 +5,5 @@ lint:
 		--min-const-length=5 \
 		--min-confidence=0.25 \
 		--cyclo-over=20 \
-		--enable=unused
+		--enable=unused \
+		--deadline=100s
