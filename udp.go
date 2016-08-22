@@ -73,7 +73,8 @@ func determineUDPProto(proto string, ip *net.UDPAddr) (string, error) {
 	return "", errUnsupportedUDPProtocol
 }
 
-// NewReusablePortPacketConn returns net.FileListener that created from a file discriptor for a socket with SO_REUSEPORT option.
+// NewReusablePortPacketConn returns net.FilePacketConn that created from
+// a file discriptor for a socket with SO_REUSEPORT option.
 func NewReusablePortPacketConn(proto, addr string) (l net.PacketConn, err error) {
 	var (
 		soType, fd int
