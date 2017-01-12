@@ -46,6 +46,15 @@ func getUDPSockaddr(proto, addr string) (sa syscall.Sockaddr, soType int, err er
 			copy(sa.Addr[:], udp.IP) // copy all bytes of slice to array
 		}
 
+		if udp.Zone != "" {
+			iface, err := net.InterfaceByName(udp.Zone)
+			if err != nil {
+				return nil, -1, err
+			}
+
+			sa.ZoneId = uint32(iface.Index)
+		}
+
 		return sa, syscall.AF_INET6, nil
 	}
 
@@ -123,4 +132,9 @@ func NewReusablePortPacketConn(proto, addr string) (l net.PacketConn, err error)
 	}
 
 	return l, err
+}
+
+// ListenPacket is an alias for NewReusablePortPacketConn.
+func ListenPacket(proto, addr string) (l net.PacketConn, err error) {
+	return NewReusablePortPacketConn(proto, addr)
 }
