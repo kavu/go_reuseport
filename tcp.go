@@ -138,3 +138,8 @@ func NewReusablePortListener(proto, addr string) (l net.Listener, err error) {
 
 	return l, err
 }
+
+// Listen function is an alias for NewReusablePortListener.
+func Listen(proto, addr string) (l net.Listener, err error) {
+	return NewReusablePortListener(proto, addr)
+}
