@@ -17,15 +17,13 @@ import (
 )
 
 const (
-	httpServerOneResponse   = "1"
-	httpServerTwoResponse   = "2"
-	httpServerThreeResponse = "3"
+	httpServerOneResponse = "1"
+	httpServerTwoResponse = "2"
 )
 
 var (
-	httpServerOne   = NewHTTPServer(httpServerOneResponse)
-	httpServerTwo   = NewHTTPServer(httpServerTwoResponse)
-	httpServerThree = NewHTTPServer(httpServerThreeResponse)
+	httpServerOne = NewHTTPServer(httpServerOneResponse)
+	httpServerTwo = NewHTTPServer(httpServerTwoResponse)
 )
 
 func NewHTTPServer(resp string) *httptest.Server {
@@ -51,6 +49,24 @@ func TestNewReusablePortListener(t *testing.T) {
 		t.Error(err)
 	}
 	defer listenerThree.Close()
+
+	listenerFour, err := NewReusablePortListener("tcp6", ":10081")
+	if err != nil {
+		t.Error(err)
+	}
+	defer listenerFour.Close()
+
+	listenerFive, err := NewReusablePortListener("tcp4", ":10081")
+	if err != nil {
+		t.Error(err)
+	}
+	defer listenerFive.Close()
+
+	listenerSix, err := NewReusablePortListener("tcp", ":10081")
+	if err != nil {
+		t.Error(err)
+	}
+	defer listenerSix.Close()
 }
 
 func TestNewReusablePortServers(t *testing.T) {
@@ -60,21 +76,14 @@ func TestNewReusablePortServers(t *testing.T) {
 	}
 	defer listenerOne.Close()
 
-	listenerTwo, err := NewReusablePortListener("tcp", "127.0.0.1:10081")
+	listenerTwo, err := NewReusablePortListener("tcp6", ":10081")
 	if err != nil {
 		t.Error(err)
 	}
 	defer listenerTwo.Close()
 
-	// listenerThree, err := NewReusablePortListener("tcp6", "[::1]:10081")
-	// if err != nil {
-	// 	t.Error(err)
-	// }
-	// defer listenerThree.Close()
-
 	httpServerOne.Listener = listenerOne
 	httpServerTwo.Listener = listenerTwo
-	// httpServerThree.Listener = listenerThree
 
 	httpServerOne.Start()
 	httpServerTwo.Start()
@@ -123,24 +132,6 @@ func TestNewReusablePortServers(t *testing.T) {
 		t.Errorf("Expected %#v, got %#v.", httpServerOneResponse, string(body3))
 	}
 
-	httpServerThree.Start()
-
-	// Server Three — First Response
-	resp4, err := http.Get(httpServerThree.URL)
-	if err != nil {
-		t.Error(err)
-	}
-	body4, err := ioutil.ReadAll(resp4.Body)
-	resp1.Body.Close()
-	if err != nil {
-		t.Error(err)
-	}
-	if string(body4) != httpServerThreeResponse {
-		t.Errorf("Expected %#v, got %#v.", httpServerThreeResponse, string(body4))
-	}
-
-	httpServerThree.Close()
-
 	// Server One — Third Response
 	resp5, err := http.Get(httpServerOne.URL)
 	if err != nil {
@@ -160,7 +151,7 @@ func TestNewReusablePortServers(t *testing.T) {
 
 func BenchmarkNewReusablePortListener(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		listener, err := NewReusablePortListener("tcp4", "localhost:10081")
+		listener, err := NewReusablePortListener("tcp", ":10081")
 
 		if err != nil {
 			b.Error(err)
