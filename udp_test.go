@@ -9,23 +9,41 @@ package reuseport
 import "testing"
 
 func TestNewReusablePortUDPListener(t *testing.T) {
-	listenerOne, err := NewReusablePortPacketConn("udp4", "localhost:10081")
+	listenerOne, err := NewReusablePortPacketConn("udp4", "localhost:10082")
 	if err != nil {
 		t.Error(err)
 	}
 	defer listenerOne.Close()
 
-	listenerTwo, err := NewReusablePortPacketConn("udp", "127.0.0.1:10081")
+	listenerTwo, err := NewReusablePortPacketConn("udp", "127.0.0.1:10082")
 	if err != nil {
 		t.Error(err)
 	}
 	defer listenerTwo.Close()
 
-	listenerThree, err := NewReusablePortPacketConn("udp6", "[::1]:10081")
+	listenerThree, err := NewReusablePortPacketConn("udp6", "[::1]:10082")
 	if err != nil {
 		t.Error(err)
 	}
 	defer listenerThree.Close()
+
+	listenerFour, err := NewReusablePortListener("udp6", ":10081")
+	if err != nil {
+		t.Error(err)
+	}
+	defer listenerFour.Close()
+
+	listenerFive, err := NewReusablePortListener("udp4", ":10081")
+	if err != nil {
+		t.Error(err)
+	}
+	defer listenerFive.Close()
+
+	listenerSix, err := NewReusablePortListener("udp", ":10081")
+	if err != nil {
+		t.Error(err)
+	}
+	defer listenerSix.Close()
 }
 
 func BenchmarkNewReusableUDPPortListener(b *testing.B) {

@@ -16,11 +16,7 @@ import (
 var errUnsupportedUDPProtocol = errors.New("only udp, udp4, udp6 are supported")
 
 func getUDPSockaddr(proto, addr string) (sa syscall.Sockaddr, soType int, err error) {
-	var (
-		addr4 [4]byte
-		addr6 [16]byte
-		udp   *net.UDPAddr
-	)
+	var udp *net.UDPAddr
 
 	udp, err = net.ResolveUDPAddr(proto, addr)
 	if err != nil && udp.IP != nil {
@@ -33,24 +29,42 @@ func getUDPSockaddr(proto, addr string) (sa syscall.Sockaddr, soType int, err er
 	}
 
 	switch udpVersion {
+	case "udp":
+		return &syscall.SockaddrInet4{Port: udp.Port}, syscall.AF_INET, nil
 	case "udp4":
-		copy(addr4[:], udp.IP[12:16]) // copy last 4 bytes of slice to array
+		sa := &syscall.SockaddrInet4{Port: udp.Port}
 
-		return &syscall.SockaddrInet4{Port: udp.Port, Addr: addr4}, syscall.AF_INET, nil
+		if udp.IP != nil {
+			copy(sa.Addr[:], udp.IP[12:16]) // copy last 4 bytes of slice to array
+		}
 
+		return sa, syscall.AF_INET, nil
 	case "udp6":
-		copy(addr6[:], udp.IP) // copy all bytes of slice to array
+		sa := &syscall.SockaddrInet6{Port: udp.Port}
 
-		return &syscall.SockaddrInet6{Port: udp.Port, Addr: addr6}, syscall.AF_INET6, nil
+		if udp.IP != nil {
+			copy(sa.Addr[:], udp.IP) // copy all bytes of slice to array
+		}
+
+		if udp.Zone != "" {
+			iface, err := net.InterfaceByName(udp.Zone)
+			if err != nil {
+				return nil, -1, err
+			}
+
+			sa.ZoneId = uint32(iface.Index)
+		}
+
+		return sa, syscall.AF_INET6, nil
 	}
 
 	return nil, -1, errUnsupportedProtocol
 }
 
 func determineUDPProto(proto string, ip *net.UDPAddr) (string, error) {
-	// If the protocol is set to "udp", we determine the actual protocol
-	// version from the size of the IP address. Otherwise, we use the
-	// protcol given to us by the caller.
+	// If the protocol is set to "udp", we try to determine the actual protocol
+	// version from the size of the resolved IP address. Otherwise, we simple use
+	// the protcol given to us by the caller.
 
 	if ip.IP.To4() != nil {
 		return "udp4", nil
@@ -60,10 +74,16 @@ func determineUDPProto(proto string, ip *net.UDPAddr) (string, error) {
 		return "udp6", nil
 	}
 
+	switch proto {
+	case "udp", "udp4", "udp6":
+		return proto, nil
+	}
+
 	return "", errUnsupportedUDPProtocol
 }
 
-// NewReusablePortPacketConn returns net.FileListener that created from a file discriptor for a socket with SO_REUSEPORT option.
+// NewReusablePortPacketConn returns net.FilePacketConn that created from
+// a file discriptor for a socket with SO_REUSEPORT option.
 func NewReusablePortPacketConn(proto, addr string) (l net.PacketConn, err error) {
 	var (
 		soType, fd int
@@ -112,4 +132,9 @@ func NewReusablePortPacketConn(proto, addr string) (l net.PacketConn, err error)
 	}
 
 	return l, err
+}
+
+// ListenPacket is an alias for NewReusablePortPacketConn.
+func ListenPacket(proto, addr string) (l net.PacketConn, err error) {
+	return NewReusablePortPacketConn(proto, addr)
 }
