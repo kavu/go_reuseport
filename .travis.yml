@@ -17,10 +17,12 @@ before_install:
 
 script:
   - go test -v -cover ./...
-  - go test -v -cover -benchmem -benchtime=5s -bench=.
-  - go test -v -cover -race  ./...
+  - go test -v -cover -race ./... -coverprofile=coverage.txt -covermode=atomic
   - go test -v -cover -race -benchmem -benchtime=5s -bench=.
 
 matrix:
   allow_failures:
     - go: tip
+ 
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
