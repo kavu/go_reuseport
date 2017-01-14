@@ -1,6 +1,6 @@
 // +build linux darwin dragonfly freebsd netbsd openbsd
 
-// Copyright (C) 2016 Max Riveiro
+// Copyright (C) 2017 Max Riveiro
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 // The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
@@ -13,6 +13,7 @@ package reuseport
 import (
 	"errors"
 	"fmt"
+	"net"
 	"os"
 	"syscall"
 )
@@ -36,4 +37,14 @@ func getSockaddr(proto, addr string) (sa syscall.Sockaddr, soType int, err error
 
 func getSocketFileName(proto, addr string) string {
 	return fmt.Sprintf(fileNameTemplate, os.Getpid(), proto, addr)
+}
+
+// Listen function is an alias for NewReusablePortListener.
+func Listen(proto, addr string) (l net.Listener, err error) {
+	return NewReusablePortListener(proto, addr)
+}
+
+// ListenPacket is an alias for NewReusablePortPacketConn.
+func ListenPacket(proto, addr string) (l net.PacketConn, err error) {
+	return NewReusablePortPacketConn(proto, addr)
 }
