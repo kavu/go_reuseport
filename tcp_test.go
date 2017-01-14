@@ -71,6 +71,44 @@ func TestNewReusablePortListener(t *testing.T) {
 	defer listenerSix.Close()
 }
 
+func TestListen(t *testing.T) {
+	listenerOne, err := Listen("tcp4", "localhost:10081")
+	if err != nil {
+		t.Error(err)
+	}
+	defer listenerOne.Close()
+
+	listenerTwo, err := Listen("tcp", "127.0.0.1:10081")
+	if err != nil {
+		t.Error(err)
+	}
+	defer listenerTwo.Close()
+
+	listenerThree, err := Listen("tcp6", "[::1]:10081")
+	if err != nil {
+		t.Error(err)
+	}
+	defer listenerThree.Close()
+
+	listenerFour, err := Listen("tcp6", ":10081")
+	if err != nil {
+		t.Error(err)
+	}
+	defer listenerFour.Close()
+
+	listenerFive, err := Listen("tcp4", ":10081")
+	if err != nil {
+		t.Error(err)
+	}
+	defer listenerFive.Close()
+
+	listenerSix, err := Listen("tcp", ":10081")
+	if err != nil {
+		t.Error(err)
+	}
+	defer listenerSix.Close()
+}
+
 func TestNewReusablePortServers(t *testing.T) {
 	listenerOne, err := NewReusablePortListener("tcp4", "localhost:10081")
 	if err != nil {

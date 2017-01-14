@@ -10,7 +10,7 @@ package reuseport
 
 import "testing"
 
-func TestNewReusablePortUDPListener(t *testing.T) {
+func TestNewReusablePortPacketConn(t *testing.T) {
 	listenerOne, err := NewReusablePortPacketConn("udp4", "localhost:10082")
 	if err != nil {
 		t.Error(err)
@@ -42,6 +42,44 @@ func TestNewReusablePortUDPListener(t *testing.T) {
 	defer listenerFive.Close()
 
 	listenerSix, err := NewReusablePortListener("udp", ":10081")
+	if err != nil {
+		t.Error(err)
+	}
+	defer listenerSix.Close()
+}
+
+func TestListenPacket(t *testing.T) {
+	listenerOne, err := ListenPacket("udp4", "localhost:10082")
+	if err != nil {
+		t.Error(err)
+	}
+	defer listenerOne.Close()
+
+	listenerTwo, err := ListenPacket("udp", "127.0.0.1:10082")
+	if err != nil {
+		t.Error(err)
+	}
+	defer listenerTwo.Close()
+
+	listenerThree, err := ListenPacket("udp6", "[::1]:10082")
+	if err != nil {
+		t.Error(err)
+	}
+	defer listenerThree.Close()
+
+	listenerFour, err := ListenPacket("udp6", ":10081")
+	if err != nil {
+		t.Error(err)
+	}
+	defer listenerFour.Close()
+
+	listenerFive, err := ListenPacket("udp4", ":10081")
+	if err != nil {
+		t.Error(err)
+	}
+	defer listenerFive.Close()
+
+	listenerSix, err := ListenPacket("udp", ":10081")
 	if err != nil {
 		t.Error(err)
 	}
