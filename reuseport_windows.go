@@ -1,4 +1,4 @@
-// +build darwin dragonfly freebsd netbsd openbsd
+// +build windows
 
 // Copyright (C) 2017 Ma Weiwei, Max Riveiro
 //
@@ -8,37 +8,12 @@
 
 package reuseport
 
-import (
-	"runtime"
-	"syscall"
-)
+import "net"
 
-var reusePort = syscall.SO_REUSEPORT
+func NewReusablePortListener(proto, addr string) (net.Listener, error) {
+	return net.Listen(proto, addr)
+}
 
-func maxListenerBacklog() int {
-	var (
-		n   uint32
-		err error
-	)
-
-	switch runtime.GOOS {
-	case "darwin", "freebsd":
-		n, err = syscall.SysctlUint32("kern.ipc.somaxconn")
-	case "netbsd":
-		// NOTE: NetBSD has no somaxconn-like kernel state so far
-	case "openbsd":
-		n, err = syscall.SysctlUint32("kern.somaxconn")
-	}
-
-	if n == 0 || err != nil {
-		return syscall.SOMAXCONN
-	}
-
-	// FreeBSD stores the backlog in a uint16, as does Linux.
-	// Assume the other BSDs do too. Truncate number to avoid wrapping.
-	// See issue 5030.
-	if n > 1<<16-1 {
-		n = 1<<16 - 1
-	}
-	return int(n)
+func NewReusablePortPacketConn(proto, addr string) (net.PacketConn, error) {
+	return net.ListenPacket(net, addr)
 }
