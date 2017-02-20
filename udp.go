@@ -108,28 +108,30 @@ func NewReusablePortPacketConn(proto, addr string) (l net.PacketConn, err error)
 		return nil, err
 	}
 
+	defer func() {
+		if err != nil {
+			syscall.Close(fd)
+		}
+	}()
+
 	if err = syscall.SetsockoptInt(fd, syscall.SOL_SOCKET, syscall.SO_REUSEADDR, 1); err != nil {
 		return nil, err
 	}
 
 	if err = syscall.SetsockoptInt(fd, syscall.SOL_SOCKET, reusePort, 1); err != nil {
-		syscall.Close(fd)
 		return nil, err
 	}
 
 	if err = syscall.Bind(fd, sockaddr); err != nil {
-		syscall.Close(fd)
 		return nil, err
 	}
 
 	file = os.NewFile(uintptr(fd), getSocketFileName(proto, addr))
 	if l, err = net.FilePacketConn(file); err != nil {
-		syscall.Close(fd)
 		return nil, err
 	}
 
 	if err = file.Close(); err != nil {
-		syscall.Close(fd)
 		return nil, err
 	}
 
