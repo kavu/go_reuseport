@@ -102,6 +102,8 @@ func NewReusablePortListener(proto, addr string) (l net.Listener, err error) {
 
 	syscall.ForkLock.RLock()
 	if fd, err = syscall.Socket(soType, syscall.SOCK_STREAM, syscall.IPPROTO_TCP); err != nil {
+		syscall.ForkLock.RUnlock()
+
 		return nil, err
 	}
 	syscall.ForkLock.RUnlock()
