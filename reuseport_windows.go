@@ -15,5 +15,5 @@ func NewReusablePortListener(proto, addr string) (net.Listener, error) {
 }
 
 func NewReusablePortPacketConn(proto, addr string) (net.PacketConn, error) {
-	return net.ListenPacket(net, addr)
+	return net.ListenPacket(proto, addr)
 }
