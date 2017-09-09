@@ -7,6 +7,7 @@ go:
   - 1.6
   - 1.7
   - 1.8
+  - 1.9
   - tip
 
 os:
@@ -23,6 +24,7 @@ script:
 
 matrix:
   allow_failures:
+    - os: osx
     - go: tip
  
 after_success:
