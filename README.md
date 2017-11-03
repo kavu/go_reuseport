@@ -3,6 +3,7 @@
 [![Build Status](https://travis-ci.org/kavu/go_reuseport.png?branch=master)](https://travis-ci.org/kavu/go_reuseport)
 [![codecov](https://codecov.io/gh/kavu/go_reuseport/branch/master/graph/badge.svg)](https://codecov.io/gh/kavu/go_reuseport)
 [![GoDoc](https://godoc.org/github.com/kavu/go_reuseport?status.png)](https://godoc.org/github.com/kavu/go_reuseport)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fkavu%2Fgo_reuseport.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fkavu%2Fgo_reuseport?ref=badge_shield)
 
 **GO_REUSEPORT** is a little expirement to create a `net.Listener` that supports [SO_REUSEPORT](http://lwn.net/Articles/542629/) socket option.
 
@@ -46,3 +47,7 @@ Now you can run several instances of this tiny server without `Address already i
 
 Inspired by [Artur Siekielski](https://github.com/aartur) [post](http://freeprogrammersblog.vhex.net/post/linux-39-introdued-new-way-of-writing-socket-servers/2) about `SO_REUSEPORT`.
 
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fkavu%2Fgo_reuseport.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fkavu%2Fgo_reuseport?ref=badge_large)
