@@ -46,17 +46,17 @@ func TestNewReusablePortListener(t *testing.T) {
 	}
 	defer listenerTwo.Close()
 
-	listenerThree, err := NewReusablePortListener("tcp6", "[::1]:10081")
-	if err != nil {
-		t.Error(err)
-	}
-	defer listenerThree.Close()
+// 	listenerThree, err := NewReusablePortListener("tcp6", "[::1]:10081")
+// 	if err != nil {
+// 		t.Error(err)
+// 	}
+// 	defer listenerThree.Close()
 
-	listenerFour, err := NewReusablePortListener("tcp6", ":10081")
-	if err != nil {
-		t.Error(err)
-	}
-	defer listenerFour.Close()
+// 	listenerFour, err := NewReusablePortListener("tcp6", ":10081")
+// 	if err != nil {
+// 		t.Error(err)
+// 	}
+// 	defer listenerFour.Close()
 
 	listenerFive, err := NewReusablePortListener("tcp4", ":10081")
 	if err != nil {
@@ -84,17 +84,17 @@ func TestListen(t *testing.T) {
 	}
 	defer listenerTwo.Close()
 
-	listenerThree, err := Listen("tcp6", "[::1]:10081")
-	if err != nil {
-		t.Error(err)
-	}
-	defer listenerThree.Close()
+// 	listenerThree, err := Listen("tcp6", "[::1]:10081")
+// 	if err != nil {
+// 		t.Error(err)
+// 	}
+// 	defer listenerThree.Close()
 
-	listenerFour, err := Listen("tcp6", ":10081")
-	if err != nil {
-		t.Error(err)
-	}
-	defer listenerFour.Close()
+// 	listenerFour, err := Listen("tcp6", ":10081")
+// 	if err != nil {
+// 		t.Error(err)
+// 	}
+// 	defer listenerFour.Close()
 
 	listenerFive, err := Listen("tcp4", ":10081")
 	if err != nil {
