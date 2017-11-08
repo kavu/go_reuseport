@@ -11,7 +11,7 @@ package reuseport
 import (
 	"fmt"
 	"html"
-	"io/ioutil"
+// 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"os"
