@@ -23,17 +23,17 @@ func TestNewReusablePortPacketConn(t *testing.T) {
 	}
 	defer listenerTwo.Close()
 
-	listenerThree, err := NewReusablePortPacketConn("udp6", "[::1]:10082")
-	if err != nil {
-		t.Error(err)
-	}
-	defer listenerThree.Close()
+// 	listenerThree, err := NewReusablePortPacketConn("udp6", "[::1]:10082")
+// 	if err != nil {
+// 		t.Error(err)
+// 	}
+// 	defer listenerThree.Close()
 
-	listenerFour, err := NewReusablePortListener("udp6", ":10081")
-	if err != nil {
-		t.Error(err)
-	}
-	defer listenerFour.Close()
+// 	listenerFour, err := NewReusablePortListener("udp6", ":10081")
+// 	if err != nil {
+// 		t.Error(err)
+// 	}
+// 	defer listenerFour.Close()
 
 	listenerFive, err := NewReusablePortListener("udp4", ":10081")
 	if err != nil {
@@ -61,17 +61,17 @@ func TestListenPacket(t *testing.T) {
 	}
 	defer listenerTwo.Close()
 
-	listenerThree, err := ListenPacket("udp6", "[::1]:10082")
-	if err != nil {
-		t.Error(err)
-	}
-	defer listenerThree.Close()
+// 	listenerThree, err := ListenPacket("udp6", "[::1]:10082")
+// 	if err != nil {
+// 		t.Error(err)
+// 	}
+// 	defer listenerThree.Close()
 
-	listenerFour, err := ListenPacket("udp6", ":10081")
-	if err != nil {
-		t.Error(err)
-	}
-	defer listenerFour.Close()
+// 	listenerFour, err := ListenPacket("udp6", ":10081")
+// 	if err != nil {
+// 		t.Error(err)
+// 	}
+// 	defer listenerFour.Close()
 
 	listenerFive, err := ListenPacket("udp4", ":10081")
 	if err != nil {
