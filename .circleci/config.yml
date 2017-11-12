@@ -1,0 +1,14 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/golang:1.8
+      
+    working_directory: /go/src/github.com/{{ORG_NAME}}/{{REPO_NAME}}
+ 
+    steps:
+      - checkout
+      - run: go get -v -t -d ./...
+      - run: go test -v -cover ./...
+      - run: go test -v -cover -race ./... -coverprofile=coverage.txt -covermode=atomic
+      - run: go test -v -cover -race -benchmem -benchtime=5s -bench=.
