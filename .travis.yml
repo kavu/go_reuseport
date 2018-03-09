@@ -1,5 +1,5 @@
 dist: trusty
-sudo: false
+sudo: true
 
 language: go
 
@@ -18,10 +18,7 @@ os:
 before_install:
   - uname -a
 
-script:
-  - go test -v -cover ./...
-  - go test -v -cover -race ./... -coverprofile=coverage.txt -covermode=atomic
-  - go test -v -cover -race -benchmem -benchtime=5s -bench=.
+script: ./test.bash
 
 matrix:
   allow_failures:
