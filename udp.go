@@ -21,7 +21,7 @@ func getUDPSockaddr(proto, addr string) (sa syscall.Sockaddr, soType int, err er
 	var udp *net.UDPAddr
 
 	udp, err = net.ResolveUDPAddr(proto, addr)
-	if err != nil && udp.IP != nil {
+	if err != nil {
 		return nil, -1, err
 	}
 
