@@ -24,7 +24,7 @@ func getTCPSockaddr(proto, addr string) (sa syscall.Sockaddr, soType int, err er
 	var tcp *net.TCPAddr
 
 	tcp, err = net.ResolveTCPAddr(proto, addr)
-	if err != nil && tcp.IP != nil {
+	if err != nil {
 		return nil, -1, err
 	}
 
