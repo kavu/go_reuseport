@@ -17,6 +17,4 @@ else
     ulimit -Sn 8192
 fi
 
-go test -v -cover ./...
-go test -v -cover -race ./... -coverprofile=coverage.txt -covermode=atomic
-go test -v -cover -race -benchmem -benchtime=5s -bench=.
+go test -v -cover

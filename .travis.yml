@@ -1,15 +1,15 @@
-dist: trusty
-sudo: true
+dist: focal
 
 language: go
 
 go:
-  - "1.6"
-  - "1.7"
-  - "1.8"
-  - "1.9"
   - "1.10"
   - "1.11"
+  - "1.12"
+  - "1.13"
+  - "1.14"
+  - "1.15"
+  - "1.16"
   - tip
 
 os:
@@ -21,10 +21,7 @@ before_install:
 
 script: ./test.bash
 
-matrix:
+jobs:
   allow_failures:
     - os: osx
     - go: tip
-
-after_success:
-  - bash <(curl -s https://codecov.io/bash)
